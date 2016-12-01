@@ -1,0 +1,52 @@
+﻿ElementAttributes:=
+ String Value:=S
+ Numeric Value:=N
+
+DimensionProperties:=
+ REPLICATION:=
+ REPSRCNAME:=
+ LOCK:=
+ DEFAULT_HIERARCHY:=
+ DEMANDLOAD:=
+ SORTELEMENTSTYPE:=
+ SORTCOMPONENTSTYPE:=
+ SORTELEMENTSSENSE:=
+ SORTCOMPONENTSSENSE:=
+ SYNCATTRIBUTES:=
+ SYNCSUBSETS:=
+ USESEPARATECONTROLCUBES:=
+
+DimensionAttributes:=
+ Test:=0
+ Code:=0
+ Caption_Default:=0
+ DIMENSION_TYPE:=0
+ DIMENSION_INFO:=0
+
+HierarchyProperties:=
+ defaultMember:=
+ level000:=
+ level001:=
+ level002:=
+ level003:=
+ level004:=
+ level005:=
+ level006:=
+ level007:=
+ level008:=
+ level009:=
+ level010:=
+ level011:=
+ level012:=
+ level013:=
+ level014:=
+ level015:=
+ level016:=
+ level017:=
+ level018:=
+ level019:=
+ level020:=
+ LevelsToHierarchize:=0
+
+---
+

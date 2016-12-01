@@ -1,0 +1,9 @@
+﻿FILE_FORMAT=100
+ENTRYNAME=General Ledger
+ENTRYTYPE=blob
+ENTRYREFERENCE=TM1:///blob/PUBLIC/.\}Externals\Book1.xlsx_20130823035810.xlsx
+REMOVEBLOBONDELETE=Yes
+***ADDITIONAL_PROPERTIES_START***
+<excel_report_attributes><admin_host></admin_host><display_titlesbar>1</display_titlesbar><allow_writeback>0</allow_writeback><max_print_sheet>0</max_
+print_sheet></excel_report_attributes>
+***ADDITIONAL_PROPERTIES_END***

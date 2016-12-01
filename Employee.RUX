@@ -1,0 +1,87 @@
+﻿FORMAT==100
+UNDEFVALS;
+SKIPCHECK;
+FEEDSTRINGS;
+
+# Actual is loaded
+['Local', 'Actual']= N: STET;
+
+# If salary override is entered, use that
+# otherwise use the salary from the previous period (and previous year if lookig at first period of the year)
+# To make the override equal 0, enter a negative number
+['Local', 'Full Time Base Salary']= N:
+    IF( ['Enter Full Time Base Salary']> 0,
+          ['Enter Full Time Base Salary'],
+         IF(['Enter Full Time Base Salary']< 0,
+              0,
+              DB('Employee',!Version,
+                  IF(AttrS('Period', !Period, 'MonthN') @= '1', AttrS('Year',!Year, 'Year-1'), !Year), AttrS('Period',!Period, 'Month-1'),
+                !Currency,!Region,!Department,!Employee,'Full Time Base Salary')
+         )
+    );
+['Base Salary', 'Local'] = N:['FTE'] * ['Full Time Base Salary'];
+
+
+#------------Payroll Tax---------------------------------------------------
+# Calculated in the General Ledger
+#------------Super----------------------------------------------------
+['Superannuation', 'Local']= N:
+  ['Base Salary'] * DB('Regional Assumptions',!Version,!Year,!Period,!Region,'Super Rate');
+
+
+#------------Annual Leave---------------------------------------------------------------------------------------
+['Annual Leave Provision', 'Local']= N:
+  ['Base Salary'] * DB('Regional Assumptions',!Version,!Year,!Period,!Region,'Annual Leave Rate');
+
+#------------LSL---------------------------------------------------------------------------------------
+['Long Service Leave Provision', 'Local']= N:
+  ['Base Salary'] * DB('Regional Assumptions',!Version,!Year,!Period,!Region,'LSL Rate');
+
+
+
+  #------------Workers Comp------------------------------------------------------------------------------------------------
+['Worker Compensation', 'Local']= N:
+  ['Base Salary'] * DB('Regional Assumptions',!Version,!Year,!Period,!Region,'Worker Compensation Rate');
+
+### FOREIGN EXCHANGE RULES
+#------------Currency Conversion----------------------------------------------
+# Use the Attribute of the region to work out what the local currency is
+# Use the Currency dimension as "Currency To" in the FX cube
+[]= N:
+  IF(!Currency @= 'Local',
+    STET
+    ,
+    ['Local']
+    *
+    DB('Currency Exchange Rates',!Version,!Year,!Period,
+          AttrS('Region', !Region, 'Currency'),
+          !Currency,'Spot Rate')
+  );
+  
+ 
+
+FEEDERS;
+# Currency Conversion
+['Local'] => ['All Currencies'];
+
+# entering salary in any month feeds base salary for the whole year
+['Enter Full Time Base Salary']=> ['Full Time Base Salary','Year'];
+
+# in case 'Enter Full Time Base Salary' was only inputted in a previous year
+# also feed base salary from FTE
+['Local','FTE']=> ['Full Time Base Salary'];
+
+# Entering FTE feeds Base Salary
+['Local','FTE']=> ['Base Salary'];
+
+# Feed Super
+['Base Salary', 'Local'] => ['Superannuation'],['Annual Leave Provision'],['Long Service Leave Provision'],['Worker Compensation'];
+
+# FEED GENERAL LEDGER CUBE
+# The 'Salaries' account in the General Ledger equals the Employee Measure 'Total Salary Costs'
+# but 'Total Salary Costs' is a C level element and you need to feed from the N level
+# hence Base Salary feeds 'Total Salary Costs' feed the GL
+# Super, Annual Leave and Workers Comp only appear if there's a Base Salary
+# so you don't need  Super, Annual Leave and Workers Comp to feed the GL
+['Local','Base Salary']=>
+  DB('General Ledger',!Version,!Year,!Period,!Currency,!Region,!Department,'Salaries','Amount');
